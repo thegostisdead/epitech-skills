@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+
+  app:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  api:
+    container_name: backend
+    build: ./backend
+    ports:
+      - "8080:5000"
+    environment:
+      - MONGO_URL=mongodb://localhost:27017
+      - MONGO_USER=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - BUCKET_ENDPOINT=${BUCKET_ENDPOINT}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - BUCKET_PORT=${BUCKET_PORT}
+      - BUCKET_ACCESS_KEY=${BUCKET_ACCESS_KEY}
+      - BUCKET_SECRET_KEY=${BUCKET_SECRET_KEY}
+      - BUCKET_REGION=${BUCKET_REGION}
+      - DATABASE_URL=mongodb://database:27017
+    depends_on:
+      - database
+      - s3
+
+  s3:
+    image: minio/minio
+    container_name: s3
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+        - minio_storage:/data
+    environment:
+        MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+        MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server --console-address ":9001" /data
+
+  database:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
+  minio_storage: {}
