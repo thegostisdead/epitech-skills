@@ -21,7 +21,8 @@ export default function SkillsAdd() {
                             <InputLeftElement pointerEvents='none'>
                                 <EmailIcon color='gray.300' />
                             </InputLeftElement>
-                            <InputRightAddon children='@epitech.eu' />
+
+                            <InputRightAddon>@epitech.eu</InputRightAddon>
                         </InputGroup>
                     </Box>
                     <Box>
